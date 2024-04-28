@@ -1,0 +1,14 @@
+[versions]
+
+compileSdk = "34"
+minSdk = "21"
+
+[libraries]
+
+kotlin-serialization = "org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.3"
+appcompat = "androidx.appcompat:appcompat:1.6.1"
+# compiler dependency is defined to help Renovabot update the version
+compose-compiler = "androidx.compose.compiler:compiler:1.5.13"
+compose-material3 = "androidx.compose.material3:material3:1.3.0-beta01"
+navigation-compose = "androidx.navigation:navigation-compose:2.8.0-beta01"
+junit = { module = "junit:junit", version = "4.13.2" }
