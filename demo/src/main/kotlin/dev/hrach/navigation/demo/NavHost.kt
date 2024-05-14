@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import dev.hrach.navigation.bottomsheet.BottomSheetNavigator
-import dev.hrach.navigation.bottomsheet.ModalBottomSheetHost
+import dev.hrach.navigation.bottomsheet.BottomSheetHost
 import dev.hrach.navigation.bottomsheet.bottomSheet
 import dev.hrach.navigation.modalsheet.ModalSheetHost
 import dev.hrach.navigation.modalsheet.ModalSheetNavigator
@@ -35,5 +35,5 @@ internal fun NavHost(
 		bottomSheet<Destinations.BottomSheet> { BottomSheet(navController) }
 	}
 	ModalSheetHost(modalSheetNavigator)
-	ModalBottomSheetHost(bottomSheetNavigator)
+	BottomSheetHost(bottomSheetNavigator)
 }
