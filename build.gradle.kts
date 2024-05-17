@@ -1,4 +1,5 @@
 import java.util.Properties
+import kotlin.math.sign
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
@@ -42,6 +43,8 @@ nmcp {
 		project(":modalsheet")
 
 		val signingPropsFile = rootProject.file("release/signing.properties")
+		if (!signingPropsFile.exists()) return@publishAggregation
+
 		val localProperties = Properties()
 		with(signingPropsFile.inputStream()) {
 			localProperties.load(this)
