@@ -19,8 +19,7 @@ jobs:
           java-version: 18
       - name: Assemble & Linters
         run: |
-          ./gradlew :core:apiCheck
-          ./gradlew :core:testDebugUnitTest
+          ./gradlew :bottomsheet:testDebugUnitTest :modalsheet:testDebugUnitTest
           ./gradlew lint lintKotlin :demo:assembleDebug
       - uses: yutailang0119/action-android-lint@v4.0.0
         name: App Lint errors to annotations
