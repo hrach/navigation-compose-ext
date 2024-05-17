@@ -22,7 +22,7 @@ version-resolver:
   patch:
     labels:
       - 'semver:patch'
-  default: patch
+  default: minor
 template: |
   Changes in this release:
 
