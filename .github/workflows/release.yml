@@ -21,11 +21,8 @@ jobs:
         run: |
           echo ${{ secrets.ENCRYPT_KEY }} | release/signing-unpack.sh
       - name: Deploy to Sonatype
-        env:
-          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
-          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
         run: |
-          ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache
+          ./gradlew :publishAggregatedPublicationToCentralPortal --no-configuration-cache
       - name: Build AAB & APK
         run: |
           ./gradlew :demo:bundleRelease :demo:assembleRelease

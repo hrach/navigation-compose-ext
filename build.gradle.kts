@@ -1,6 +1,3 @@
-import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
-import com.vanniktech.maven.publish.MavenPublishBaseExtension
-import com.vanniktech.maven.publish.SonatypeHost
 import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
@@ -11,7 +8,8 @@ plugins {
 	id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.14.0" apply false
 	id("org.jmailen.kotlinter") version "4.3.0" apply false
 	id("com.android.application") version "8.3.0" apply false
-	id("com.vanniktech.maven.publish.base") version "0.27.0" apply false
+	id("com.vanniktech.maven.publish") version "0.27.0" apply false
+	id("com.gradleup.nmcp") version "0.0.7"
 }
 
 subprojects {
@@ -36,16 +34,21 @@ subprojects {
 			}
 		}
 	}
+}
 
-	plugins.withId("com.vanniktech.maven.publish.base") {
-		@Suppress("UnstableApiUsage")
-		configure<MavenPublishBaseExtension> {
-			group = requireNotNull(project.findProperty("GROUP"))
-			version = requireNotNull(project.findProperty("VERSION_NAME"))
-			pomFromGradleProperties()
-			publishToMavenCentral(SonatypeHost.S01, true)
-			signAllPublications()
-			configure(AndroidSingleVariantLibrary())
+nmcp {
+	publishAggregation {
+		project(":bottomsheet")
+		project(":modalsheet")
+
+		val signingPropsFile = rootProject.file("release/signing.properties")
+		val localProperties = Properties()
+		with(signingPropsFile.inputStream()) {
+			localProperties.load(this)
 		}
+
+		username = localProperties.getProperty("centralSonatypeUsername")
+		password = localProperties.getProperty("centralSonatypePassword")
+		publicationType = "AUTOMATIC"
 	}
 }

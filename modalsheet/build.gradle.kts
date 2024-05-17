@@ -4,9 +4,12 @@ plugins {
 	id("com.android.library")
 	id("org.jetbrains.kotlin.android")
 	id("org.jetbrains.kotlinx.binary-compatibility-validator")
-	id("com.vanniktech.maven.publish.base")
+	id("com.vanniktech.maven.publish")
+	id("com.gradleup.nmcp")
 	id("org.jmailen.kotlinter")
 }
+
+version = property("VERSION_NAME") as String
 
 android {
 	namespace = "dev.hrach.navigation.modalsheet"
@@ -43,6 +46,10 @@ android {
 		abortOnError = true
 		warningsAsErrors = true
 	}
+}
+
+nmcp {
+	publishAllPublications {}
 }
 
 kotlinter {
