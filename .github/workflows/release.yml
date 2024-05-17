@@ -20,10 +20,12 @@ jobs:
       - name: Decrypt secrets
         run: |
           echo ${{ secrets.ENCRYPT_KEY }} | release/signing-unpack.sh
-          mv gradle.properties gradle.backup.properties
-          cat gradle.backup.properties | grep -v configuration-cache > gradle.properties
       - name: Deploy to Sonatype
-        run: ./gradlew publish
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+        run: |
+          ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache
       - name: Build AAB & APK
         run: |
           ./gradlew :demo:bundleRelease :demo:assembleRelease
