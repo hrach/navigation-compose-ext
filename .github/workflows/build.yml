@@ -20,7 +20,7 @@ jobs:
       - name: Assemble & Linters
         run: |
           ./gradlew :bottomsheet:testDebugUnitTest :modalsheet:testDebugUnitTest
-          ./gradlew lint lintKotlin :demo:assembleDebug
+          ./gradlew lintDebug lintKotlin :demo:assembleDebug
       - uses: yutailang0119/action-android-lint@v4.0.0
         name: App Lint errors to annotations
         if: ${{ failure() }}
