@@ -13,11 +13,9 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -29,15 +27,6 @@ import dev.hrach.navigation.modalsheet.ModalSheetNavigator
 @Composable
 public fun App() {
 	MaterialTheme {
-		@Suppress("UNUSED_VARIABLE")
-		val isLight = MaterialTheme.colorScheme.background.luminance() > 0.5
-		SideEffect {
-//			systemUiController.setSystemBarsColor(
-//				color = Color.Transparent,
-//				darkIcons = isLight,
-//			)
-		}
-
 		val modalSheetNavigator = remember { ModalSheetNavigator() }
 		val bottomSheetNavigator = remember { BottomSheetNavigator() }
 		val navController = rememberNavController(modalSheetNavigator, bottomSheetNavigator)
@@ -84,6 +73,7 @@ private val Items = listOf(
 @Composable
 private fun BottomBar(navController: NavHostController) {
 	val navBackStackEntry by navController.currentBackStackEntryAsState()
+
 	@Suppress("UNUSED_VARIABLE")
 	val currentDestination = navBackStackEntry?.destination
 

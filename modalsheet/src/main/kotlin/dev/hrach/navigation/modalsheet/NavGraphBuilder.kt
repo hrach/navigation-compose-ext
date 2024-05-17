@@ -1,7 +1,6 @@
 package dev.hrach.navigation.modalsheet
 
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.SizeTransform
@@ -14,21 +13,17 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.get
 import kotlin.reflect.KType
+import androidx.compose.animation.AnimatedContentTransitionScope as ACTS
 
 public inline fun <reified T : Any> NavGraphBuilder.modalSheet(
 	typeMap: Map<KType, @JvmSuppressWildcards NavType<*>> = emptyMap(),
 	deepLinks: List<NavDeepLink> = emptyList(),
 	securePolicy: SecureFlagPolicy = SecureFlagPolicy.Inherit,
-	noinline enterTransition: (AnimatedContentTransitionScope<NavBackStackEntry>.() ->
-	@JvmSuppressWildcards EnterTransition?)? = null,
-	noinline exitTransition: (AnimatedContentTransitionScope<NavBackStackEntry>.() ->
-	@JvmSuppressWildcards ExitTransition?)? = null,
-	noinline popEnterTransition: (AnimatedContentTransitionScope<NavBackStackEntry>.() ->
-	@JvmSuppressWildcards EnterTransition?)? = enterTransition,
-	noinline popExitTransition: (AnimatedContentTransitionScope<NavBackStackEntry>.() ->
-	@JvmSuppressWildcards ExitTransition?)? = exitTransition,
-	noinline sizeTransform: (AnimatedContentTransitionScope<NavBackStackEntry>.() ->
-	@JvmSuppressWildcards SizeTransform?)? = null,
+	noinline enterTransition: (ACTS<NavBackStackEntry>.() -> @JvmSuppressWildcards EnterTransition?)? = null,
+	noinline exitTransition: (ACTS<NavBackStackEntry>.() -> @JvmSuppressWildcards ExitTransition?)? = null,
+	noinline popEnterTransition: (ACTS<NavBackStackEntry>.() -> @JvmSuppressWildcards EnterTransition?)? = enterTransition,
+	noinline popExitTransition: (ACTS<NavBackStackEntry>.() -> @JvmSuppressWildcards ExitTransition?)? = exitTransition,
+	noinline sizeTransform: (ACTS<NavBackStackEntry>.() -> @JvmSuppressWildcards SizeTransform?)? = null,
 	noinline content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit,
 ) {
 	destination(
@@ -56,16 +51,11 @@ public fun NavGraphBuilder.modalSheet(
 	arguments: List<NamedNavArgument> = emptyList(),
 	deepLinks: List<NavDeepLink> = emptyList(),
 	securePolicy: SecureFlagPolicy,
-	enterTransition: (AnimatedContentTransitionScope<NavBackStackEntry>.() ->
-	@JvmSuppressWildcards EnterTransition?)? = null,
-	exitTransition: (AnimatedContentTransitionScope<NavBackStackEntry>.() ->
-	@JvmSuppressWildcards ExitTransition?)? = null,
-	popEnterTransition: (AnimatedContentTransitionScope<NavBackStackEntry>.() ->
-	@JvmSuppressWildcards EnterTransition?)? = enterTransition,
-	popExitTransition: (AnimatedContentTransitionScope<NavBackStackEntry>.() ->
-	@JvmSuppressWildcards ExitTransition?)? = exitTransition,
-	sizeTransform: (AnimatedContentTransitionScope<NavBackStackEntry>.() ->
-	@JvmSuppressWildcards SizeTransform?)? = null,
+	enterTransition: (ACTS<NavBackStackEntry>.() -> @JvmSuppressWildcards EnterTransition?)? = null,
+	exitTransition: (ACTS<NavBackStackEntry>.() -> @JvmSuppressWildcards ExitTransition?)? = null,
+	popEnterTransition: (ACTS<NavBackStackEntry>.() -> @JvmSuppressWildcards EnterTransition?)? = enterTransition,
+	popExitTransition: (ACTS<NavBackStackEntry>.() -> @JvmSuppressWildcards ExitTransition?)? = exitTransition,
+	sizeTransform: (ACTS<NavBackStackEntry>.() -> @JvmSuppressWildcards SizeTransform?)? = null,
 	content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit,
 ) {
 	destination(

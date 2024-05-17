@@ -55,19 +55,19 @@ public class ModalSheetNavigator : Navigator<Destination>() {
 	) : NavDestination(navigator), FloatingWindow {
 		internal var securePolicy: SecureFlagPolicy = SecureFlagPolicy.Inherit
 
-		internal var enterTransition: (@JvmSuppressWildcards
-		AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? = null
+		internal var enterTransition: (@JvmSuppressWildcards AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? =
+			null
 
-		internal var exitTransition: (@JvmSuppressWildcards
-		AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? = null
+		internal var exitTransition: (@JvmSuppressWildcards AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? =
+			null
 
-		internal var popEnterTransition: (@JvmSuppressWildcards
-		AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? = null
+		internal var popEnterTransition: (@JvmSuppressWildcards AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? =
+			null
 
-		internal var popExitTransition: (@JvmSuppressWildcards
-		AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? = null
+		internal var popExitTransition: (@JvmSuppressWildcards AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? =
+			null
 
-		internal var sizeTransform: (@JvmSuppressWildcards
-		AnimatedContentTransitionScope<NavBackStackEntry>.() -> SizeTransform?)? = null
+		internal var sizeTransform: (@JvmSuppressWildcards AnimatedContentTransitionScope<NavBackStackEntry>.() -> SizeTransform?)? =
+			null
 	}
 }

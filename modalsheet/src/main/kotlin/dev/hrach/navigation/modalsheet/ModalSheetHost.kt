@@ -40,16 +40,16 @@ import kotlinx.coroutines.CancellationException
 public fun ModalSheetHost(
 	modalSheetNavigator: ModalSheetNavigator,
 	modifier: Modifier = Modifier,
-	enterTransition: (AnimatedContentTransitionScope<NavBackStackEntry>.() ->
-	@JvmSuppressWildcards EnterTransition) = { fadeIn(animationSpec = tween(700)) },
-	exitTransition: (AnimatedContentTransitionScope<NavBackStackEntry>.() ->
-	@JvmSuppressWildcards ExitTransition) = { fadeOut(animationSpec = tween(700)) },
-	popEnterTransition: (AnimatedContentTransitionScope<NavBackStackEntry>.() ->
-	@JvmSuppressWildcards EnterTransition) = enterTransition,
-	popExitTransition: (AnimatedContentTransitionScope<NavBackStackEntry>.() ->
-	@JvmSuppressWildcards ExitTransition) = exitTransition,
-	sizeTransform: (AnimatedContentTransitionScope<NavBackStackEntry>.() ->
-	@JvmSuppressWildcards SizeTransform?)? = null,
+	enterTransition: (AnimatedContentTransitionScope<NavBackStackEntry>.() -> @JvmSuppressWildcards EnterTransition) =
+		{ fadeIn(animationSpec = tween(700)) },
+	exitTransition: (AnimatedContentTransitionScope<NavBackStackEntry>.() -> @JvmSuppressWildcards ExitTransition) =
+		{ fadeOut(animationSpec = tween(700)) },
+	popEnterTransition: (AnimatedContentTransitionScope<NavBackStackEntry>.() -> @JvmSuppressWildcards EnterTransition) =
+		enterTransition,
+	popExitTransition: (AnimatedContentTransitionScope<NavBackStackEntry>.() -> @JvmSuppressWildcards ExitTransition) =
+		exitTransition,
+	sizeTransform: (AnimatedContentTransitionScope<NavBackStackEntry>.() -> @JvmSuppressWildcards SizeTransform?)? =
+		null,
 ) {
 	val modalBackStack by modalSheetNavigator.backStack.collectAsState(listOf())
 
@@ -94,8 +94,7 @@ public fun ModalSheetHost(
 			} ?: exitTransition.invoke(this)
 		}
 	}
-	val finalSizeTransform:
-		AnimatedContentTransitionScope<NavBackStackEntry>.() -> SizeTransform? = {
+	val finalSizeTransform: AnimatedContentTransitionScope<NavBackStackEntry>.() -> SizeTransform? = {
 		val targetDestination = targetState.destination as ModalSheetNavigator.Destination
 
 		targetDestination.hierarchy.firstNotNullOfOrNull { destination ->
@@ -104,12 +103,10 @@ public fun ModalSheetHost(
 	}
 
 	val transition = updateTransition(backStackEntry, label = "entry")
-	if (!(
-			transition.currentState == transition.targetState
-				&& transition.currentState == null
-				&& backStackEntry == null
-			)
-	) {
+	val nothingToShow = transition.currentState == transition.targetState &&
+		transition.currentState == null &&
+		backStackEntry == null
+	if (!nothingToShow) {
 		val securePolicy = (backStackEntry?.destination as? ModalSheetNavigator.Destination)
 			?.securePolicy
 			?: SecureFlagPolicy.Inherit
@@ -163,7 +160,10 @@ public fun ModalSheetHost(
 					@Suppress("UNCHECKED_CAST")
 					this as AnimatedContentTransitionScope<NavBackStackEntry>
 					ContentTransform(
-						finalEnter(this), finalExit(this), targetZIndex, finalSizeTransform(this),
+						targetContentEnter = finalEnter(this),
+						initialContentExit = finalExit(this),
+						targetContentZIndex = targetZIndex,
+						sizeTransform = finalSizeTransform(this),
 					)
 				},
 			) { currentEntry ->

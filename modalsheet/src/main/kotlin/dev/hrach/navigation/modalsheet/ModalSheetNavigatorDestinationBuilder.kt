@@ -27,20 +27,20 @@ public class ModalSheetNavigatorDestinationBuilder :
 
 	public var securePolicy: SecureFlagPolicy = SecureFlagPolicy.Inherit
 
-	public var enterTransition: (@JvmSuppressWildcards
-	AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? = null
+	public var enterTransition: (@JvmSuppressWildcards AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? =
+		null
 
-	public var exitTransition: (@JvmSuppressWildcards
-	AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? = null
+	public var exitTransition: (@JvmSuppressWildcards AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? =
+		null
 
-	public var popEnterTransition: (@JvmSuppressWildcards
-	AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? = null
+	public var popEnterTransition: (@JvmSuppressWildcards AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?)? =
+		null
 
-	public var popExitTransition: (@JvmSuppressWildcards
-	AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? = null
+	public var popExitTransition: (@JvmSuppressWildcards AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?)? =
+		null
 
-	public var sizeTransform: (@JvmSuppressWildcards
-	AnimatedContentTransitionScope<NavBackStackEntry>.() -> SizeTransform?)? = null
+	public var sizeTransform: (@JvmSuppressWildcards AnimatedContentTransitionScope<NavBackStackEntry>.() -> SizeTransform?)? =
+		null
 
 	/**
 	 * DSL for constructing a new [ModalSheetNavigator.Destination]

@@ -4,17 +4,17 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import dev.hrach.navigation.bottomsheet.BottomSheetNavigator
 import dev.hrach.navigation.bottomsheet.BottomSheetHost
+import dev.hrach.navigation.bottomsheet.BottomSheetNavigator
 import dev.hrach.navigation.bottomsheet.bottomSheet
-import dev.hrach.navigation.modalsheet.ModalSheetHost
-import dev.hrach.navigation.modalsheet.ModalSheetNavigator
 import dev.hrach.navigation.demo.screens.BottomSheet
 import dev.hrach.navigation.demo.screens.Home
 import dev.hrach.navigation.demo.screens.List
 import dev.hrach.navigation.demo.screens.Modal1
 import dev.hrach.navigation.demo.screens.Modal2
 import dev.hrach.navigation.demo.screens.Profile
+import dev.hrach.navigation.modalsheet.ModalSheetHost
+import dev.hrach.navigation.modalsheet.ModalSheetNavigator
 import dev.hrach.navigation.modalsheet.modalSheet
 
 @Composable

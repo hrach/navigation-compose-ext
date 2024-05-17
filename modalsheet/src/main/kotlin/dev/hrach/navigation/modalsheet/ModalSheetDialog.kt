@@ -61,7 +61,7 @@ internal fun ModalSheetDialog(
 	val currentContent by rememberUpdatedState(content)
 	val dialogId = rememberSaveable { UUID.randomUUID() }
 	val dialog = remember(view, density) {
-		ModalSheetDialogLayout.ModalSheetDialogWrapper(
+		ModalSheetDialogWrapper(
 			onPredictiveBack,
 			view,
 			securePolicy,
@@ -120,132 +120,128 @@ private class ModalSheetDialogLayout(
 		PredictiveBackHandler { onPredictiveBack(it) }
 		content()
 	}
+}
 
-	// Fork of androidx.compose.ui.window.DialogWrapper.
-	// predictiveBackProgress and scope params added for predictive back implementation.
-	// EdgeToEdgeFloatingDialogWindowTheme provided to allow theme to extend into status bar.
-	class ModalSheetDialogWrapper(
-		private var onPredictiveBack: suspend (Flow<BackEventCompat>) -> Unit,
-		private val composeView: View,
-		securePolicy: SecureFlagPolicy,
-		layoutDirection: LayoutDirection,
-		density: Density,
-		dialogId: UUID,
-	) : ComponentDialog(
-		ContextThemeWrapper(
-			composeView.context,
-			R.style.EdgeToEdgeFloatingDialogWindowTheme,
-		),
-	), ViewRootForInspector {
-		private val dialogLayout: ModalSheetDialogLayout
+// Fork of androidx.compose.ui.window.DialogWrapper.
+// predictiveBackProgress and scope params added for predictive back implementation.
+// EdgeToEdgeFloatingDialogWindowTheme provided to allow theme to extend into status bar.
+internal class ModalSheetDialogWrapper(
+	private var onPredictiveBack: suspend (Flow<BackEventCompat>) -> Unit,
+	private val composeView: View,
+	securePolicy: SecureFlagPolicy,
+	layoutDirection: LayoutDirection,
+	density: Density,
+	dialogId: UUID,
+) : ComponentDialog(ContextThemeWrapper(composeView.context, R.style.EdgeToEdgeFloatingDialogWindowTheme)),
+	ViewRootForInspector {
+	private val dialogLayout: ModalSheetDialogLayout
 
-		// On systems older than Android S, there is a bug in the surface insets matrix math used by
-		// elevation, so high values of maxSupportedElevation break accessibility services: b/232788477.
-		private val maxSupportedElevation = 8.dp
-		override val subCompositionView: AbstractComposeView get() = dialogLayout
+	// On systems older than Android S, there is a bug in the surface insets matrix math used by
+	// elevation, so high values of maxSupportedElevation break accessibility services: b/232788477.
+	private val maxSupportedElevation = 8.dp
+	override val subCompositionView: AbstractComposeView get() = dialogLayout
 
-		init {
-			val window = window ?: error("Dialog has no window")
-			window.requestFeature(Window.FEATURE_NO_TITLE)
-			window.setBackgroundDrawableResource(android.R.color.transparent)
-			WindowCompat.setDecorFitsSystemWindows(window, false)
-			dialogLayout = ModalSheetDialogLayout(
-				context,
-				window,
-				onPredictiveBack,
-			).apply {
-				// Set unique id for AbstractComposeView. This allows state restoration for the state
-				// defined inside the Dialog via rememberSaveable()
-				setTag(R.id.compose_view_saveable_id_tag, "Dialog:$dialogId")
-				// Enable children to draw their shadow by not clipping them
-				clipChildren = false
-				// Allocate space for elevation
-				with(density) { elevation = maxSupportedElevation.toPx() }
-				// Simple outline to force window manager to allocate space for shadow.
-				// Note that the outline affects clickable area for the dismiss listener. In case of
-				// shapes like circle the area for dismiss might be to small (rectangular outline
-				// consuming clicks outside of the circle).
-				outlineProvider = object : ViewOutlineProvider() {
-					override fun getOutline(view: View, result: Outline) {
-						result.setRect(0, 0, view.width, view.height)
-						// We set alpha to 0 to hide the view's shadow and let the composable to draw
-						// its own shadow. This still enables us to get the extra space needed in the
-						// surface.
-						result.alpha = 0f
-					}
+	init {
+		val window = window ?: error("Dialog has no window")
+		window.requestFeature(Window.FEATURE_NO_TITLE)
+		window.setBackgroundDrawableResource(android.R.color.transparent)
+		WindowCompat.setDecorFitsSystemWindows(window, false)
+		dialogLayout = ModalSheetDialogLayout(
+			context,
+			window,
+			onPredictiveBack,
+		).apply {
+			// Set unique id for AbstractComposeView. This allows state restoration for the state
+			// defined inside the Dialog via rememberSaveable()
+			setTag(R.id.compose_view_saveable_id_tag, "Dialog:$dialogId")
+			// Enable children to draw their shadow by not clipping them
+			clipChildren = false
+			// Allocate space for elevation
+			with(density) { elevation = maxSupportedElevation.toPx() }
+			// Simple outline to force window manager to allocate space for shadow.
+			// Note that the outline affects clickable area for the dismiss listener. In case of
+			// shapes like circle the area for dismiss might be to small (rectangular outline
+			// consuming clicks outside of the circle).
+			outlineProvider = object : ViewOutlineProvider() {
+				override fun getOutline(view: View, result: Outline) {
+					result.setRect(0, 0, view.width, view.height)
+					// We set alpha to 0 to hide the view's shadow and let the composable to draw
+					// its own shadow. This still enables us to get the extra space needed in the
+					// surface.
+					result.alpha = 0f
 				}
 			}
-			// Clipping logic removed because we are spanning edge to edge.
-			setContentView(dialogLayout)
-			dialogLayout.setViewTreeLifecycleOwner(composeView.findViewTreeLifecycleOwner())
-			dialogLayout.setViewTreeViewModelStoreOwner(composeView.findViewTreeViewModelStoreOwner())
-			dialogLayout.setViewTreeSavedStateRegistryOwner(
-				composeView.findViewTreeSavedStateRegistryOwner(),
-			)
-			dialogLayout.setViewTreeOnBackPressedDispatcherOwner(this)
-			// Initial setup
-			updateParameters(onPredictiveBack, securePolicy, layoutDirection)
-			WindowCompat.getInsetsController(window, window.decorView).apply {
-				isAppearanceLightStatusBars = true
-				isAppearanceLightNavigationBars = true
-			}
 		}
+		// Clipping logic removed because we are spanning edge to edge.
+		setContentView(dialogLayout)
+		dialogLayout.setViewTreeLifecycleOwner(composeView.findViewTreeLifecycleOwner())
+		dialogLayout.setViewTreeViewModelStoreOwner(composeView.findViewTreeViewModelStoreOwner())
+		dialogLayout.setViewTreeSavedStateRegistryOwner(
+			composeView.findViewTreeSavedStateRegistryOwner(),
+		)
+		dialogLayout.setViewTreeOnBackPressedDispatcherOwner(this)
+		// Initial setup
+		updateParameters(onPredictiveBack, securePolicy, layoutDirection)
+		WindowCompat.getInsetsController(window, window.decorView).apply {
+			isAppearanceLightStatusBars = true
+			isAppearanceLightNavigationBars = true
+		}
+	}
 
-		private fun setLayoutDirection(layoutDirection: LayoutDirection) {
-			dialogLayout.layoutDirection = when (layoutDirection) {
-				LayoutDirection.Ltr -> android.util.LayoutDirection.LTR
-				LayoutDirection.Rtl -> android.util.LayoutDirection.RTL
-			}
+	private fun setLayoutDirection(layoutDirection: LayoutDirection) {
+		dialogLayout.layoutDirection = when (layoutDirection) {
+			LayoutDirection.Ltr -> android.util.LayoutDirection.LTR
+			LayoutDirection.Rtl -> android.util.LayoutDirection.RTL
 		}
+	}
 
-		fun setContent(parentComposition: CompositionContext, children: @Composable () -> Unit) {
-			dialogLayout.setContent(parentComposition, children)
-		}
+	fun setContent(parentComposition: CompositionContext, children: @Composable () -> Unit) {
+		dialogLayout.setContent(parentComposition, children)
+	}
 
-		private fun setSecurePolicy(securePolicy: SecureFlagPolicy) {
-			val secureFlagEnabled =
-				securePolicy.shouldApplySecureFlag(composeView.isFlagSecureEnabled())
-			window!!.setFlags(
-				if (secureFlagEnabled) {
-					WindowManager.LayoutParams.FLAG_SECURE
-				} else {
-					WindowManager.LayoutParams.FLAG_SECURE.inv()
-				},
-				WindowManager.LayoutParams.FLAG_SECURE,
-			)
-		}
+	private fun setSecurePolicy(securePolicy: SecureFlagPolicy) {
+		val secureFlagEnabled =
+			securePolicy.shouldApplySecureFlag(composeView.isFlagSecureEnabled())
+		window!!.setFlags(
+			if (secureFlagEnabled) {
+				WindowManager.LayoutParams.FLAG_SECURE
+			} else {
+				WindowManager.LayoutParams.FLAG_SECURE.inv()
+			},
+			WindowManager.LayoutParams.FLAG_SECURE,
+		)
+	}
 
-		fun updateParameters(
-			onPredictiveBack: suspend (Flow<BackEventCompat>) -> Unit,
-			securePolicy: SecureFlagPolicy,
-			layoutDirection: LayoutDirection,
-		) {
-			this.onPredictiveBack = onPredictiveBack
-			setSecurePolicy(securePolicy)
-			setLayoutDirection(layoutDirection)
-			// Window flags to span parent window.
-			window?.setLayout(
-				WindowManager.LayoutParams.MATCH_PARENT,
-				WindowManager.LayoutParams.MATCH_PARENT,
-			)
-			window?.setSoftInputMode(
-				if (Build.VERSION.SDK_INT >= 30) {
-					WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
-				} else {
-					@Suppress("DEPRECATION")
-					WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
-				},
-			)
-		}
+	fun updateParameters(
+		onPredictiveBack: suspend (Flow<BackEventCompat>) -> Unit,
+		securePolicy: SecureFlagPolicy,
+		layoutDirection: LayoutDirection,
+	) {
+		this.onPredictiveBack = onPredictiveBack
+		setSecurePolicy(securePolicy)
+		setLayoutDirection(layoutDirection)
+		// Window flags to span parent window.
+		window?.setLayout(
+			WindowManager.LayoutParams.MATCH_PARENT,
+			WindowManager.LayoutParams.MATCH_PARENT,
+		)
+		window?.setSoftInputMode(
+			if (Build.VERSION.SDK_INT >= 30) {
+				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
+			} else {
+				@Suppress("DEPRECATION")
+				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+			},
+		)
+	}
 
-		fun disposeComposition() {
-			dialogLayout.disposeComposition()
-		}
+	fun disposeComposition() {
+		dialogLayout.disposeComposition()
+	}
 
-		override fun cancel() {
-			// Prevents the dialog from dismissing itself
-			return
-		}
+	override fun cancel() {
+		// Prevents the dialog from dismissing itself
+		return
 	}
 }
 
