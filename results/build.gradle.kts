@@ -1,43 +1,35 @@
 @file:Suppress("UnstableApiUsage")
 
 plugins {
-	id("com.android.application")
+	id("com.android.library")
 	id("org.jetbrains.kotlin.android")
 	id("org.jetbrains.kotlin.plugin.compose")
-	id("org.jetbrains.kotlin.plugin.serialization")
+	id("org.jetbrains.kotlinx.binary-compatibility-validator")
+	id("com.vanniktech.maven.publish")
+	id("com.gradleup.nmcp")
 	id("org.jmailen.kotlinter")
 }
 
+version = property("VERSION_NAME") as String
+
 android {
-	namespace = "dev.hrach.navigation.demo"
+	namespace = "dev.hrach.navigation.results"
 
 	compileSdk = libs.versions.compileSdk.get().toInt()
 
 	defaultConfig {
-		applicationId = "dev.hrach.navigation.demo"
-		minSdk = 26
-		targetSdk = 34
-		versionName = "1.0.0"
-		versionCode = 1
+		minSdk = libs.versions.minSdk.get().toInt()
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 	}
 
 	buildFeatures {
 		compose = true
+		buildConfig = false
 	}
 
 	compileOptions {
 		sourceCompatibility = JavaVersion.VERSION_1_8
 		targetCompatibility = JavaVersion.VERSION_1_8
-	}
-
-	buildFeatures {
-		compose = true
-		buildConfig = false
-		aidl = false
-		renderScript = false
-		resValues = false
-		shaders = false
 	}
 
 	kotlinOptions {
@@ -53,16 +45,17 @@ android {
 	}
 }
 
+nmcp {
+	publishAllPublications {}
+}
+
 kotlinter {
 	reporters = arrayOf("json")
 }
 
 dependencies {
-	implementation(projects.bottomsheet)
-	implementation(projects.modalsheet)
-	implementation(projects.results)
-
-	implementation(libs.kotlin.serialization.core)
-	implementation(libs.compose.material3)
 	implementation(libs.navigation.compose)
+	implementation(libs.kotlin.serialization.json)
+	implementation(libs.androidx.lifecycle.runtime)
+	testImplementation(libs.junit)
 }
