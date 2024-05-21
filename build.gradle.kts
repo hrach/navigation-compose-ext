@@ -42,6 +42,7 @@ nmcp {
 	publishAggregation {
 		project(":bottomsheet")
 		project(":modalsheet")
+		project(":results")
 
 		val signingPropsFile = rootProject.file("release/signing.properties")
 		if (!signingPropsFile.exists()) return@publishAggregation
