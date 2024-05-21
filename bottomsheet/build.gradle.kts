@@ -3,6 +3,7 @@
 plugins {
 	id("com.android.library")
 	id("org.jetbrains.kotlin.android")
+	id("org.jetbrains.kotlin.plugin.compose")
 	id("org.jetbrains.kotlinx.binary-compatibility-validator")
 	id("com.vanniktech.maven.publish")
 	id("com.gradleup.nmcp")
@@ -29,10 +30,6 @@ android {
 	compileOptions {
 		sourceCompatibility = JavaVersion.VERSION_1_8
 		targetCompatibility = JavaVersion.VERSION_1_8
-	}
-
-	composeOptions {
-		kotlinCompilerExtensionVersion = libs.compose.compiler.get().version
 	}
 
 	kotlinOptions {

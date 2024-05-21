@@ -3,6 +3,7 @@
 plugins {
 	id("com.android.application")
 	id("org.jetbrains.kotlin.android")
+	id("org.jetbrains.kotlin.plugin.compose")
 	id("org.jetbrains.kotlin.plugin.serialization")
 	id("org.jmailen.kotlinter")
 }
@@ -28,10 +29,6 @@ android {
 	compileOptions {
 		sourceCompatibility = JavaVersion.VERSION_1_8
 		targetCompatibility = JavaVersion.VERSION_1_8
-	}
-
-	composeOptions {
-		kotlinCompilerExtensionVersion = libs.compose.compiler.get().version
 	}
 
 	buildFeatures {
