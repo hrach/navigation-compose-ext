@@ -14,6 +14,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import dev.hrach.navigation.demo.Destinations
+import dev.hrach.navigation.results.setResult
+import kotlin.random.Random
 
 @Composable
 internal fun BottomSheet(navController: NavController) {
@@ -21,7 +24,13 @@ internal fun BottomSheet(navController: NavController) {
 		Text("This is a bottomsheet")
 		var value by rememberSaveable { mutableStateOf("") }
 		OutlinedTextField(value = value, onValueChange = { value = it })
-		OutlinedButton(onClick = { navController.popBackStack() }, Modifier.fillMaxWidth()) {
+		OutlinedButton(
+			onClick = {
+				navController.setResult(Destinations.BottomSheet.Result(Random.nextInt()))
+				navController.popBackStack()
+			},
+			modifier = Modifier.fillMaxWidth(),
+		) {
 			Text("Close")
 		}
 	}

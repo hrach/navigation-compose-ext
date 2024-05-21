@@ -19,5 +19,10 @@ internal object Destinations {
 	data object Modal2
 
 	@Serializable
-	data object BottomSheet
+	data object BottomSheet {
+		@Serializable
+		data class Result(
+			val id: Int,
+		)
+	}
 }
