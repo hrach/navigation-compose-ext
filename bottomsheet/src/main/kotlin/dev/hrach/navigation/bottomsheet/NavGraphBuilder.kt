@@ -33,7 +33,7 @@ public inline fun <reified T : Any> NavGraphBuilder.bottomSheet(
 	)
 }
 
-internal fun NavGraphBuilder.bottomSheet(
+public fun NavGraphBuilder.bottomSheet(
 	route: String,
 	arguments: List<NamedNavArgument> = emptyList(),
 	deepLinks: List<NavDeepLink> = emptyList(),
