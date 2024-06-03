@@ -11,7 +11,7 @@ plugins {
 	id("org.jmailen.kotlinter") version "4.3.0" apply false
 	id("com.android.application") version "8.4.1" apply false
 	id("com.vanniktech.maven.publish") version "0.28.0" apply false
-	id("com.gradleup.nmcp") version "0.0.7"
+	id("com.gradleup.nmcp") version "0.0.8"
 }
 
 subprojects {
