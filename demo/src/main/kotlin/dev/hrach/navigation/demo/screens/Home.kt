@@ -40,7 +40,7 @@ private fun Home(
 	Column {
 		Text("Home")
 
-		OutlinedButton(onClick = { navigate(Destinations.Modal1) }) {
+		OutlinedButton(onClick = { navigate(Destinations.IssueObjectThenClass) }) {
 			Text("Modal 1")
 		}
 

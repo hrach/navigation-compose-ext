@@ -26,6 +26,14 @@ android {
 		compose = true
 	}
 
+	buildTypes {
+		getByName("release") {
+			signingConfig = signingConfigs.getByName("debug")
+			isMinifyEnabled = true
+			proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro",)
+		}
+	}
+
 	compileOptions {
 		sourceCompatibility = JavaVersion.VERSION_1_8
 		targetCompatibility = JavaVersion.VERSION_1_8
