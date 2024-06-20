@@ -54,7 +54,6 @@ kotlinter {
 }
 
 dependencies {
-	implementation(libs.appcompat)
 	implementation(libs.navigation.compose)
 	implementation(libs.compose.material3)
 
