@@ -10,5 +10,5 @@ kotlin-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.
 appcompat = "androidx.appcompat:appcompat:1.6.1"
 androidx-lifecycle-runtime = "androidx.lifecycle:lifecycle-runtime:2.8.1"
 compose-material3 = "androidx.compose.material3:material3:1.3.0-beta04"
-navigation-compose = "androidx.navigation:navigation-compose:2.8.0-beta03"
+navigation-compose = "androidx.navigation:navigation-compose:2.8.0-beta04"
 junit = { module = "junit:junit", version = "4.13.2" }
