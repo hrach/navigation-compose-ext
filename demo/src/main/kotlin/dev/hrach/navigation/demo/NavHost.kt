@@ -1,5 +1,6 @@
 package dev.hrach.navigation.demo
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -34,6 +35,6 @@ internal fun NavHost(
 		modalSheet<Destinations.Modal2> { Modal2() }
 		bottomSheet<Destinations.BottomSheet> { BottomSheet(navController) }
 	}
-	ModalSheetHost(modalSheetNavigator)
+	ModalSheetHost(modalSheetNavigator, containerColor = MaterialTheme.colorScheme.background)
 	BottomSheetHost(bottomSheetNavigator)
 }

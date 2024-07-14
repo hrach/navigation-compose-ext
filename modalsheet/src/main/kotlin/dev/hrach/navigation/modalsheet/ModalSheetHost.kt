@@ -10,6 +10,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -26,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.window.SecureFlagPolicy
 import androidx.lifecycle.Lifecycle
@@ -39,6 +41,7 @@ import kotlinx.coroutines.CancellationException
 @Composable
 public fun ModalSheetHost(
 	modalSheetNavigator: ModalSheetNavigator,
+	containerColor: Color,
 	modifier: Modifier = Modifier,
 	enterTransition: (AnimatedContentTransitionScope<NavBackStackEntry>.() -> @JvmSuppressWildcards EnterTransition) =
 		{ fadeIn(animationSpec = tween(700)) },
@@ -134,7 +137,8 @@ public fun ModalSheetHost(
 			securePolicy = securePolicy,
 		) {
 			transition.AnimatedContent(
-				modifier = modifier,
+				modifier = modifier
+					.background(if (transition.targetState == null) Color.Unspecified else containerColor),
 				contentAlignment = Alignment.TopStart,
 				transitionSpec = block@{
 					val initialState = initialState ?: return@block ContentTransform(
