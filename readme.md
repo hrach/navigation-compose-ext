@@ -1,8 +1,8 @@
 Extensions for Navigation Compose
 =================================
 
-[![CI Build](https://img.shields.io/github/actions/workflow/status/hrach/navigation-compose/build.yml?branch=main)](https://github.com/hrach/navigation-compose/actions/workflows/build.yml)
-[![GitHub release](https://img.shields.io/github/v/release/hrach/navigation-compose)](https://github.com/hrach/navigation-compose/releases)
+[![CI Build](https://img.shields.io/github/actions/workflow/status/hrach/navigation-compose-ext/build.yml?branch=main)](https://github.com/hrach/navigation-compose-ext/actions/workflows/build.yml)
+[![GitHub release](https://img.shields.io/github/v/release/hrach/navigation-compose-ext)](https://github.com/hrach/navigation-compose-ext/releases)
 
 See `demo` module.
 
