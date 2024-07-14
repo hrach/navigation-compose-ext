@@ -13,6 +13,7 @@ import androidx.activity.ComponentDialog
 import androidx.activity.compose.PredictiveBackHandler
 import androidx.activity.setViewTreeOnBackPressedDispatcherOwner
 import androidx.appcompat.view.ContextThemeWrapper
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionContext
@@ -60,6 +61,7 @@ internal fun ModalSheetDialog(
 	val composition = rememberCompositionContext()
 	val currentContent by rememberUpdatedState(content)
 	val dialogId = rememberSaveable { UUID.randomUUID() }
+	val darkThemeEnabled = isSystemInDarkTheme()
 	val dialog = remember(view, density) {
 		ModalSheetDialogWrapper(
 			onPredictiveBack,
@@ -68,6 +70,7 @@ internal fun ModalSheetDialog(
 			layoutDirection,
 			density,
 			dialogId,
+			darkThemeEnabled
 		).apply {
 			setContent(composition) {
 				Box(
@@ -90,6 +93,7 @@ internal fun ModalSheetDialog(
 			onPredictiveBack = onPredictiveBack,
 			securePolicy = securePolicy,
 			layoutDirection = layoutDirection,
+			darkThemeEnabled = darkThemeEnabled,
 		)
 	}
 }
@@ -132,6 +136,7 @@ internal class ModalSheetDialogWrapper(
 	layoutDirection: LayoutDirection,
 	density: Density,
 	dialogId: UUID,
+	darkThemeEnabled: Boolean,
 ) : ComponentDialog(ContextThemeWrapper(composeView.context, R.style.EdgeToEdgeFloatingDialogWindowTheme)),
 	ViewRootForInspector {
 	private val dialogLayout: ModalSheetDialogLayout
@@ -181,11 +186,7 @@ internal class ModalSheetDialogWrapper(
 		)
 		dialogLayout.setViewTreeOnBackPressedDispatcherOwner(this)
 		// Initial setup
-		updateParameters(onPredictiveBack, securePolicy, layoutDirection)
-		WindowCompat.getInsetsController(window, window.decorView).apply {
-			isAppearanceLightStatusBars = true
-			isAppearanceLightNavigationBars = true
-		}
+		updateParameters(onPredictiveBack, securePolicy, layoutDirection, darkThemeEnabled)
 	}
 
 	private fun setLayoutDirection(layoutDirection: LayoutDirection) {
@@ -216,6 +217,7 @@ internal class ModalSheetDialogWrapper(
 		onPredictiveBack: suspend (Flow<BackEventCompat>) -> Unit,
 		securePolicy: SecureFlagPolicy,
 		layoutDirection: LayoutDirection,
+		darkThemeEnabled: Boolean,
 	) {
 		this.onPredictiveBack = onPredictiveBack
 		setSecurePolicy(securePolicy)
@@ -233,6 +235,10 @@ internal class ModalSheetDialogWrapper(
 				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
 			},
 		)
+		WindowCompat.getInsetsController(window!!, window!!.decorView).apply {
+			isAppearanceLightStatusBars = !darkThemeEnabled
+			isAppearanceLightNavigationBars = !darkThemeEnabled
+		}
 	}
 
 	fun disposeComposition() {
