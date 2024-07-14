@@ -6,8 +6,10 @@ import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.SeekableTransitionState
+import androidx.compose.animation.core.animate
+import androidx.compose.animation.core.rememberTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -36,6 +38,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.LocalOwnersProvider
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
 
 @Suppress("UNUSED_ANONYMOUS_PARAMETER")
 @Composable
@@ -66,11 +69,12 @@ public fun ModalSheetHost(
 	val visibleEntries = rememberVisibleList(modalBackStack)
 	visibleEntries.PopulateVisibleList(modalBackStack)
 
-	val backStackEntry: NavBackStackEntry? = if (LocalInspectionMode.current) {
-		modalSheetNavigator.backStack.collectAsState(emptyList()).value.lastOrNull()
+	val currentBackStack = if (LocalInspectionMode.current) {
+		modalSheetNavigator.backStack.collectAsState(emptyList()).value
 	} else {
-		visibleEntries.lastOrNull()
+		visibleEntries
 	}
+	val backStackEntry: NavBackStackEntry? = currentBackStack.lastOrNull()
 
 	val finalEnter: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
 		val targetDestination = targetState.destination as ModalSheetNavigator.Destination
@@ -105,10 +109,54 @@ public fun ModalSheetHost(
 		} ?: sizeTransform?.invoke(this)
 	}
 
-	val transition = updateTransition(backStackEntry, label = "entry")
+	val transitionState = remember {
+		// The state returned here cannot be nullable cause it produces the input of the
+		// transitionSpec passed into the AnimatedContent and that must match the non-nullable
+		// scope exposed by the transitions on the NavHost and composable APIs.
+		SeekableTransitionState(backStackEntry)
+	}
+	val transition = rememberTransition(transitionState, label = "entry")
 	val nothingToShow = transition.currentState == transition.targetState &&
 		transition.currentState == null &&
 		backStackEntry == null
+
+	if (inPredictiveBack) {
+		LaunchedEffect(progress) {
+			val previousEntry = currentBackStack.getOrNull(currentBackStack.size - 2)
+			transitionState.seekTo(progress, previousEntry)
+		}
+	} else {
+		LaunchedEffect(backStackEntry) {
+			// This ensures we don't animate after the back gesture is cancelled and we
+			// are already on the current state
+			if (transitionState.currentState != backStackEntry) {
+				transitionState.animateTo(backStackEntry)
+			} else {
+				// convert from nanoseconds to milliseconds
+				val totalDuration = transition.totalDurationNanos / 1000000
+				// When the predictive back gesture is cancel, we need to manually animate
+				// the SeekableTransitionState from where it left off, to zero and then
+				// snapTo the final position.
+				animate(
+					transitionState.fraction,
+					0f,
+					animationSpec = tween((transitionState.fraction * totalDuration).toInt()),
+				) { value, _ ->
+					this@LaunchedEffect.launch {
+						if (value > 0) {
+							// Seek the original transition back to the currentState
+							transitionState.seekTo(value)
+						}
+						if (value == 0f) {
+							// Once we animate to the start, we need to snap to the right state.
+							transitionState.snapTo(backStackEntry)
+						}
+					}
+				}
+			}
+		}
+	}
+
 	if (!nothingToShow) {
 		val securePolicy = (backStackEntry?.destination as? ModalSheetNavigator.Destination)
 			?.securePolicy
@@ -170,7 +218,13 @@ public fun ModalSheetHost(
 						sizeTransform = finalSizeTransform(this),
 					)
 				},
-			) { currentEntry ->
+			) {
+				val currentEntry = if (inPredictiveBack) {
+					it
+				} else {
+					visibleEntries.lastOrNull { entry -> it == entry }
+				}
+
 				if (currentEntry == null) {
 					Box(Modifier.fillMaxSize()) {}
 					return@AnimatedContent
