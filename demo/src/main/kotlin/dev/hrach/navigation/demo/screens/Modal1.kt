@@ -1,7 +1,6 @@
 package dev.hrach.navigation.demo.screens
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +8,7 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -42,19 +42,22 @@ private fun Modal1(
 	navigate: (Any) -> Unit,
 	bottomSheetResult: Int,
 ) {
-	Column(
-		Modifier
-			.fillMaxSize()
-			.background(MaterialTheme.colorScheme.surface)
-			.windowInsetsPadding(WindowInsets.systemBars),
+	Surface(
+		color = MaterialTheme.colorScheme.inverseSurface,
 	) {
-		Text("Modal 1")
-		OutlinedButton(onClick = { navigate(Destinations.Modal2) }) {
-			Text("Modal 2")
+		Column(
+			modifier = Modifier
+				.fillMaxSize()
+				.windowInsetsPadding(WindowInsets.systemBars),
+		) {
+			Text("Modal 1")
+			OutlinedButton(onClick = { navigate(Destinations.Modal2) }) {
+				Text("Modal 2")
+			}
+			OutlinedButton(onClick = { navigate(Destinations.BottomSheet) }) {
+				Text("BottomSheet")
+			}
+			Text("BottomSheetResult: $bottomSheetResult")
 		}
-		OutlinedButton(onClick = { navigate(Destinations.BottomSheet) }) {
-			Text("BottomSheet")
-		}
-		Text("BottomSheetResult: $bottomSheetResult")
 	}
 }

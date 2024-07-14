@@ -55,6 +55,7 @@ kotlinter {
 
 dependencies {
 	implementation(libs.appcompat)
+	implementation(libs.compose.foundation)
 	implementation(libs.navigation.compose)
 
 	testImplementation(libs.junit)

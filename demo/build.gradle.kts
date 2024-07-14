@@ -16,7 +16,7 @@ android {
 	defaultConfig {
 		applicationId = "dev.hrach.navigation.demo"
 		minSdk = 26
-		targetSdk = 34
+		targetSdk = 35
 		versionName = "1.0.0"
 		versionCode = 1
 		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -48,6 +48,7 @@ android {
 
 	lint {
 		disable.add("GradleDependency")
+		disable.add("OldTargetApi")
 		abortOnError = true
 		warningsAsErrors = true
 	}

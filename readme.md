@@ -37,7 +37,7 @@ NavHost(
 	modalSheet<Destinations.Modal> { Modal(navController) }
 	bottomSheet<Destinations.BottomSheet> { BottomSheet(navController) }
 }
-ModalSheetHost(modalSheetNavigator)
+ModalSheetHost(modalSheetNavigator, containerColor = MaterialTheme.colorScheme.background)
 BottomSheetHost(bottomSheetNavigator)
 ```
 

@@ -1,6 +1,5 @@
 package dev.hrach.navigation.modalsheet
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Outline
 import android.os.Build
@@ -8,20 +7,28 @@ import android.view.View
 import android.view.ViewOutlineProvider
 import android.view.Window
 import android.view.WindowManager
+import android.window.BackEvent
+import android.window.OnBackAnimationCallback
+import android.window.OnBackInvokedCallback
+import android.window.OnBackInvokedDispatcher
 import androidx.activity.BackEventCompat
 import androidx.activity.ComponentDialog
-import androidx.activity.compose.PredictiveBackHandler
 import androidx.activity.setViewTreeOnBackPressedDispatcherOwner
+import androidx.annotation.DoNotInline
+import androidx.annotation.RequiresApi
 import androidx.appcompat.view.ContextThemeWrapper
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCompositionContext
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -46,7 +53,16 @@ import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.savedstate.findViewTreeSavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import java.util.UUID
+import java.util.concurrent.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.BufferOverflow.SUSPEND
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.launch
 
 @Composable
 internal fun ModalSheetDialog(
@@ -60,14 +76,20 @@ internal fun ModalSheetDialog(
 	val composition = rememberCompositionContext()
 	val currentContent by rememberUpdatedState(content)
 	val dialogId = rememberSaveable { UUID.randomUUID() }
+	val darkThemeEnabled = isSystemInDarkTheme()
+	val currentOnPredictiveBack = rememberUpdatedState(onPredictiveBack)
+	val scope = rememberCoroutineScope()
+
 	val dialog = remember(view, density) {
 		ModalSheetDialogWrapper(
-			onPredictiveBack,
+			currentOnPredictiveBack,
 			view,
+			scope,
 			securePolicy,
 			layoutDirection,
 			density,
 			dialogId,
+			darkThemeEnabled,
 		).apply {
 			setContent(composition) {
 				Box(
@@ -87,9 +109,9 @@ internal fun ModalSheetDialog(
 	}
 	SideEffect {
 		dialog.updateParameters(
-			onPredictiveBack = onPredictiveBack,
 			securePolicy = securePolicy,
 			layoutDirection = layoutDirection,
+			darkThemeEnabled = darkThemeEnabled,
 		)
 	}
 }
@@ -100,9 +122,11 @@ internal fun ModalSheetDialog(
 private class ModalSheetDialogLayout(
 	context: Context,
 	override val window: Window,
-	private var onPredictiveBack: suspend (Flow<BackEventCompat>) -> Unit,
+	private val onPredictiveBack: State<suspend (Flow<BackEventCompat>) -> Unit>,
+	private val scope: CoroutineScope,
 ) : AbstractComposeView(context), DialogWindowProvider {
 	private var content: @Composable () -> Unit by mutableStateOf({})
+	private var backCallback: Any? = null
 	override var shouldCreateCompositionOnAttachedToWindow: Boolean = false
 		private set
 
@@ -113,12 +137,112 @@ private class ModalSheetDialogLayout(
 		createComposition()
 	}
 
-	// Display width and height logic removed, size will always span fillMaxSize().
-	@SuppressLint("NoCollectCallFound")
 	@Composable
 	override fun Content() {
-		PredictiveBackHandler { onPredictiveBack(it) }
 		content()
+	}
+
+	override fun onAttachedToWindow() {
+		super.onAttachedToWindow()
+		maybeRegisterBackCallback()
+	}
+
+	override fun onDetachedFromWindow() {
+		super.onDetachedFromWindow()
+		maybeUnregisterBackCallback()
+	}
+
+	private fun maybeRegisterBackCallback() {
+		if (Build.VERSION.SDK_INT < 33) return
+		if (backCallback == null) {
+			backCallback = when {
+				Build.VERSION.SDK_INT >= 34 -> Api34Impl.createBackCallback(onPredictiveBack, scope)
+				else -> Api33Impl.createBackCallback(onPredictiveBack, scope)
+			}
+		}
+		Api33Impl.maybeRegisterBackCallback(this, backCallback)
+	}
+
+	private fun maybeUnregisterBackCallback() {
+		if (Build.VERSION.SDK_INT >= 33) {
+			Api33Impl.maybeUnregisterBackCallback(this, backCallback)
+		}
+		backCallback = null
+	}
+
+	@RequiresApi(34)
+	private object Api34Impl {
+		@JvmStatic
+		@DoNotInline
+		fun createBackCallback(
+			currentOnBack: State<suspend (Flow<BackEventCompat>) -> Unit>,
+			scope: CoroutineScope,
+		) = object : OnBackAnimationCallback {
+			var onBackInstance: OnBackInstance? = null
+
+			override fun onBackStarted(backEvent: BackEvent) {
+				onBackInstance?.cancel()
+				onBackInstance = OnBackInstance(scope, true, currentOnBack.value)
+			}
+
+			override fun onBackProgressed(backEvent: BackEvent) {
+				onBackInstance?.send(BackEventCompat(backEvent))
+			}
+
+			override fun onBackInvoked() {
+				onBackInstance?.apply {
+					if (!isPredictiveBack) {
+						cancel()
+						onBackInstance = null
+					}
+				}
+				if (onBackInstance == null) {
+					onBackInstance = OnBackInstance(scope, false, currentOnBack.value)
+				}
+				onBackInstance?.close()
+				onBackInstance?.isPredictiveBack = false
+			}
+
+			override fun onBackCancelled() {
+				onBackInstance?.cancel()
+				onBackInstance = null
+				onBackInstance?.isPredictiveBack = false
+			}
+		}
+	}
+
+	@RequiresApi(33)
+	private object Api33Impl {
+		@JvmStatic
+		@DoNotInline
+		fun createBackCallback(
+			currentOnBack: State<suspend (Flow<BackEventCompat>) -> Unit>,
+			scope: CoroutineScope,
+		) {
+			OnBackInvokedCallback {
+				scope.launch {
+					currentOnBack.value.invoke(flowOf())
+				}
+			}
+		}
+
+		@JvmStatic
+		@DoNotInline
+		fun maybeRegisterBackCallback(view: View, backCallback: Any?) {
+			if (backCallback !is OnBackInvokedCallback) return
+			val dispatcher = view.findOnBackInvokedDispatcher() ?: return
+			dispatcher.registerOnBackInvokedCallback(
+				OnBackInvokedDispatcher.PRIORITY_OVERLAY,
+				backCallback,
+			)
+		}
+
+		@JvmStatic
+		@DoNotInline
+		fun maybeUnregisterBackCallback(view: View, backCallback: Any?) {
+			if (backCallback !is OnBackInvokedCallback) return
+			view.findOnBackInvokedDispatcher()?.unregisterOnBackInvokedCallback(backCallback)
+		}
 	}
 }
 
@@ -126,12 +250,14 @@ private class ModalSheetDialogLayout(
 // predictiveBackProgress and scope params added for predictive back implementation.
 // EdgeToEdgeFloatingDialogWindowTheme provided to allow theme to extend into status bar.
 internal class ModalSheetDialogWrapper(
-	private var onPredictiveBack: suspend (Flow<BackEventCompat>) -> Unit,
+	onPredictiveBack: State<suspend (Flow<BackEventCompat>) -> Unit>,
 	private val composeView: View,
+	scope: CoroutineScope,
 	securePolicy: SecureFlagPolicy,
 	layoutDirection: LayoutDirection,
 	density: Density,
 	dialogId: UUID,
+	darkThemeEnabled: Boolean,
 ) : ComponentDialog(ContextThemeWrapper(composeView.context, R.style.EdgeToEdgeFloatingDialogWindowTheme)),
 	ViewRootForInspector {
 	private val dialogLayout: ModalSheetDialogLayout
@@ -150,6 +276,7 @@ internal class ModalSheetDialogWrapper(
 			context,
 			window,
 			onPredictiveBack,
+			scope,
 		).apply {
 			// Set unique id for AbstractComposeView. This allows state restoration for the state
 			// defined inside the Dialog via rememberSaveable()
@@ -181,11 +308,7 @@ internal class ModalSheetDialogWrapper(
 		)
 		dialogLayout.setViewTreeOnBackPressedDispatcherOwner(this)
 		// Initial setup
-		updateParameters(onPredictiveBack, securePolicy, layoutDirection)
-		WindowCompat.getInsetsController(window, window.decorView).apply {
-			isAppearanceLightStatusBars = true
-			isAppearanceLightNavigationBars = true
-		}
+		updateParameters(securePolicy, layoutDirection, darkThemeEnabled)
 	}
 
 	private fun setLayoutDirection(layoutDirection: LayoutDirection) {
@@ -213,11 +336,10 @@ internal class ModalSheetDialogWrapper(
 	}
 
 	fun updateParameters(
-		onPredictiveBack: suspend (Flow<BackEventCompat>) -> Unit,
 		securePolicy: SecureFlagPolicy,
 		layoutDirection: LayoutDirection,
+		darkThemeEnabled: Boolean,
 	) {
-		this.onPredictiveBack = onPredictiveBack
 		setSecurePolicy(securePolicy)
 		setLayoutDirection(layoutDirection)
 		// Window flags to span parent window.
@@ -233,6 +355,10 @@ internal class ModalSheetDialogWrapper(
 				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
 			},
 		)
+		WindowCompat.getInsetsController(window!!, window!!.decorView).apply {
+			isAppearanceLightStatusBars = !darkThemeEnabled
+			isAppearanceLightNavigationBars = !darkThemeEnabled
+		}
 	}
 
 	fun disposeComposition() {
@@ -242,6 +368,35 @@ internal class ModalSheetDialogWrapper(
 	override fun cancel() {
 		// Prevents the dialog from dismissing itself
 		return
+	}
+}
+
+private class OnBackInstance(
+	scope: CoroutineScope,
+	var isPredictiveBack: Boolean,
+	onBack: suspend (progress: Flow<BackEventCompat>) -> Unit,
+) {
+	val channel = Channel<BackEventCompat>(capacity = BUFFERED, onBufferOverflow = SUSPEND)
+	val job = scope.launch {
+		var completed = false
+		onBack(
+			channel.consumeAsFlow().onCompletion {
+				completed = true
+			},
+		)
+		check(completed) {
+			"You must collect the progress flow"
+		}
+	}
+
+	fun send(backEvent: BackEventCompat) = channel.trySend(backEvent)
+
+	// idempotent if invoked more than once
+	fun close() = channel.close()
+
+	fun cancel() {
+		channel.cancel(CancellationException("onBack cancelled"))
+		job.cancel()
 	}
 }
 
