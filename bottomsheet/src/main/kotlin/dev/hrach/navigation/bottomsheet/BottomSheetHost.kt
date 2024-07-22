@@ -94,7 +94,7 @@ private fun BottomSheetHost(
 		navigator = navigator,
 		saveableStateHolder = saveableStateHolder,
 		backStackEntry = backStackEntry ?: return,
-		modifier = modifier
+		modifier = modifier,
 	)
 }
 
@@ -118,7 +118,7 @@ private fun BottomSheetHost(
 			sheetState = sheetState,
 			properties = ModalBottomSheetProperties(securePolicy = destination.securePolicy),
 			onDismissRequest = { navigator.dismiss(backStackEntry) },
-			modifier = modifier
+			modifier = modifier,
 		) {
 			LaunchedEffect(backStackEntry) {
 				navigator.onTransitionComplete(backStackEntry)
