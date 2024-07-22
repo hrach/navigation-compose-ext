@@ -15,6 +15,7 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.SaveableStateHolder
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.LocalOwnersProvider
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.flow
 @Composable
 public fun BottomSheetHost(
 	navigator: BottomSheetNavigator,
+	modifier: Modifier = Modifier,
 ) {
 	val saveableStateHolder = rememberSaveableStateHolder()
 
@@ -47,6 +49,7 @@ public fun BottomSheetHost(
 			navigator = navigator,
 			saveableStateHolder = saveableStateHolder,
 			targetBackStackEntry = backStackEntry,
+			modifier = modifier,
 		)
 	}
 }
@@ -66,6 +69,7 @@ private fun BottomSheetHost(
 	navigator: BottomSheetNavigator,
 	saveableStateHolder: SaveableStateHolder,
 	targetBackStackEntry: NavBackStackEntry?,
+	modifier: Modifier = Modifier,
 ) {
 	val destination = targetBackStackEntry?.destination as? BottomSheetNavigator.Destination
 	val sheetState = rememberModalBottomSheetState(
@@ -90,6 +94,7 @@ private fun BottomSheetHost(
 		navigator = navigator,
 		saveableStateHolder = saveableStateHolder,
 		backStackEntry = backStackEntry ?: return,
+		modifier = modifier,
 	)
 }
 
@@ -100,6 +105,7 @@ private fun BottomSheetHost(
 	navigator: BottomSheetNavigator,
 	saveableStateHolder: SaveableStateHolder,
 	backStackEntry: NavBackStackEntry,
+	modifier: Modifier = Modifier,
 ) {
 	LaunchedEffect(backStackEntry) {
 		sheetState.show()
@@ -112,6 +118,7 @@ private fun BottomSheetHost(
 			sheetState = sheetState,
 			properties = ModalBottomSheetProperties(securePolicy = destination.securePolicy),
 			onDismissRequest = { navigator.dismiss(backStackEntry) },
+			modifier = modifier,
 		) {
 			LaunchedEffect(backStackEntry) {
 				navigator.onTransitionComplete(backStackEntry)
