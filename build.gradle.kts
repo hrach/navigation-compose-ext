@@ -9,7 +9,7 @@ plugins {
 	id("org.jetbrains.kotlin.plugin.compose") version "2.0.0" apply false
 	id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.14.0" apply false
 	id("org.jmailen.kotlinter") version "4.4.1" apply false
-	id("com.android.application") version "8.5.0" apply false
+	id("com.android.application") version "8.5.1" apply false
 	id("com.vanniktech.maven.publish") version "0.29.0" apply false
 	id("com.gradleup.nmcp") version "0.0.9"
 }
