@@ -13,6 +13,7 @@ import android.window.OnBackInvokedCallback
 import android.window.OnBackInvokedDispatcher
 import androidx.activity.BackEventCompat
 import androidx.activity.ComponentDialog
+import androidx.activity.addCallback
 import androidx.activity.setViewTreeOnBackPressedDispatcherOwner
 import androidx.annotation.DoNotInline
 import androidx.annotation.RequiresApi
@@ -309,6 +310,17 @@ internal class ModalSheetDialogWrapper(
 		dialogLayout.setViewTreeOnBackPressedDispatcherOwner(this)
 		// Initial setup
 		updateParameters(securePolicy, layoutDirection, darkThemeEnabled)
+
+		// Due to how the onDismissRequest callback works
+		// (it enforces a just-in-time decision on whether to update the state to hide the dialog)
+		// we need to unconditionally add a callback here that is always enabled,
+		// meaning we'll never get a system UI controlled predictive back animation
+		// for these dialogs
+		onBackPressedDispatcher.addCallback(this) {
+			scope.launch {
+				onPredictiveBack.value.invoke(flowOf())
+			}
+		}
 	}
 
 	private fun setLayoutDirection(layoutDirection: LayoutDirection) {
