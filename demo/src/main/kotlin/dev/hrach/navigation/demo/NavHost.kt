@@ -1,7 +1,10 @@
 package dev.hrach.navigation.demo
 
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -36,5 +39,13 @@ internal fun NavHost(
 		bottomSheet<Destinations.BottomSheet> { BottomSheet(navController) }
 	}
 	ModalSheetHost(modalSheetNavigator, containerColor = MaterialTheme.colorScheme.background)
-	BottomSheetHost(bottomSheetNavigator)
+	BottomSheetHost(
+		bottomSheetNavigator,
+		shape = RoundedCornerShape( // optional, just an example of bottom sheet custom property
+			topStart = CornerSize(12.dp),
+			topEnd = CornerSize(12.dp),
+			bottomStart = CornerSize(0.dp),
+			bottomEnd = CornerSize(0.dp),
+		),
+	)
 }
