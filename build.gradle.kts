@@ -1,5 +1,4 @@
 import java.util.Properties
-import kotlin.math.sign
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 

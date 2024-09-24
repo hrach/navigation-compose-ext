@@ -45,7 +45,7 @@ internal fun NavHost(
 			topStart = CornerSize(12.dp),
 			topEnd = CornerSize(12.dp),
 			bottomStart = CornerSize(0.dp),
-			bottomEnd = CornerSize(0.dp)
-		)
+			bottomEnd = CornerSize(0.dp),
+		),
 	)
 }

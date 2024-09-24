@@ -35,12 +35,14 @@ public fun BottomSheetHost(
 	navigator: BottomSheetNavigator,
 	modifier: Modifier = Modifier,
 	sheetMaxWidth: Dp = BottomSheetDefaults.SheetMaxWidth,
-	shape: Shape = BottomSheetDefaults. ExpandedShape,
-	containerColor: Color = BottomSheetDefaults. ContainerColor,
+	shape: Shape = BottomSheetDefaults.ExpandedShape,
+	containerColor: Color = BottomSheetDefaults.ContainerColor,
 	contentColor: Color = contentColorFor(containerColor),
 	tonalElevation: Dp = 0.dp,
-	scrimColor: Color = BottomSheetDefaults. ScrimColor,
-	dragHandle: @Composable() (() -> Unit)? = { BottomSheetDefaults. DragHandle() },
+	scrimColor: Color = BottomSheetDefaults.ScrimColor,
+	dragHandle:
+		@Composable()
+		(() -> Unit)? = { BottomSheetDefaults.DragHandle() },
 ) {
 	val saveableStateHolder = rememberSaveableStateHolder()
 
@@ -67,7 +69,7 @@ public fun BottomSheetHost(
 			containerColor = containerColor,
 			contentColor = contentColor,
 			tonalElevation = tonalElevation,
-			scrimColor= scrimColor,
+			scrimColor = scrimColor,
 			dragHandle = dragHandle,
 			saveableStateHolder = saveableStateHolder,
 			targetBackStackEntry = backStackEntry,
@@ -95,7 +97,9 @@ private fun BottomSheetHost(
 	contentColor: Color,
 	tonalElevation: Dp,
 	scrimColor: Color,
-	dragHandle: @Composable() (() -> Unit)?,
+	dragHandle:
+		@Composable()
+		(() -> Unit)?,
 	saveableStateHolder: SaveableStateHolder,
 	targetBackStackEntry: NavBackStackEntry?,
 ) {
@@ -125,7 +129,7 @@ private fun BottomSheetHost(
 		containerColor = containerColor,
 		contentColor = contentColor,
 		tonalElevation = tonalElevation,
-		scrimColor= scrimColor,
+		scrimColor = scrimColor,
 		dragHandle = dragHandle,
 		sheetState = sheetState,
 		saveableStateHolder = saveableStateHolder,
@@ -144,7 +148,9 @@ private fun BottomSheetHost(
 	contentColor: Color,
 	tonalElevation: Dp,
 	scrimColor: Color,
-	dragHandle: @Composable() (() -> Unit)?,
+	dragHandle:
+		@Composable()
+		(() -> Unit)?,
 	sheetState: SheetState,
 	saveableStateHolder: SaveableStateHolder,
 	backStackEntry: NavBackStackEntry,
@@ -165,7 +171,7 @@ private fun BottomSheetHost(
 			containerColor = containerColor,
 			contentColor = contentColor,
 			tonalElevation = tonalElevation,
-			scrimColor= scrimColor,
+			scrimColor = scrimColor,
 			dragHandle = dragHandle,
 			properties = ModalBottomSheetProperties(securePolicy = destination.securePolicy),
 		) {
