@@ -107,6 +107,7 @@ private fun BottomSheetHost(
 	val sheetState = rememberModalBottomSheetState(
 		skipPartiallyExpanded = destination?.skipPartiallyExpanded ?: true,
 	)
+	@Suppress("ProduceStateDoesNotAssignValue") // false positive
 	val backStackEntry by produceState<NavBackStackEntry?>(
 		initialValue = null,
 		key1 = targetBackStackEntry,
