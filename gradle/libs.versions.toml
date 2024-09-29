@@ -5,8 +5,8 @@ minSdk = "21"
 
 [libraries]
 
-kotlin-serialization-core = "org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.3"
-kotlin-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3"
+kotlin-serialization-core = "org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.3"
+kotlin-serialization-json = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3"
 appcompat = "androidx.appcompat:appcompat:1.6.1"
 androidx-lifecycle-runtime = "androidx.lifecycle:lifecycle-runtime:2.8.5"
 compose-foundation = "androidx.compose.foundation:foundation:1.6.8"
