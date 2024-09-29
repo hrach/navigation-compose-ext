@@ -1,5 +1,5 @@
 public final class dev/hrach/navigation/bottomsheet/BottomSheetHostKt {
-	public static final fun BottomSheetHost-sAOB22Y (Ldev/hrach/navigation/bottomsheet/BottomSheetNavigator;Landroidx/compose/ui/Modifier;FLandroidx/compose/ui/graphics/Shape;JJFJLkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
+	public static final fun BottomSheetHost-u5qS3lI (Ldev/hrach/navigation/bottomsheet/BottomSheetNavigator;Landroidx/compose/ui/Modifier;FLandroidx/compose/ui/graphics/Shape;JJFJLkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
 }
 
 public final class dev/hrach/navigation/bottomsheet/BottomSheetNavigator : androidx/navigation/Navigator {

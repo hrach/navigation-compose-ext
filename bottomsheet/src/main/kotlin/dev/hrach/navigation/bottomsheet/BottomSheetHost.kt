@@ -1,5 +1,6 @@
 package dev.hrach.navigation.bottomsheet
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -40,6 +41,7 @@ public fun BottomSheetHost(
 	tonalElevation: Dp = 0.dp,
 	scrimColor: Color = BottomSheetDefaults.ScrimColor,
 	dragHandle: @Composable (() -> Unit)? = { BottomSheetDefaults.DragHandle() },
+	contentWindowInsets: @Composable () -> WindowInsets = { BottomSheetDefaults.windowInsets },
 ) {
 	val saveableStateHolder = rememberSaveableStateHolder()
 
@@ -68,6 +70,7 @@ public fun BottomSheetHost(
 			tonalElevation = tonalElevation,
 			scrimColor = scrimColor,
 			dragHandle = dragHandle,
+			contentWindowInsets = contentWindowInsets,
 			saveableStateHolder = saveableStateHolder,
 			targetBackStackEntry = backStackEntry,
 		)
@@ -95,6 +98,7 @@ private fun BottomSheetHost(
 	tonalElevation: Dp,
 	scrimColor: Color,
 	dragHandle: @Composable (() -> Unit)?,
+	contentWindowInsets: @Composable () -> WindowInsets,
 	saveableStateHolder: SaveableStateHolder,
 	targetBackStackEntry: NavBackStackEntry?,
 ) {
@@ -129,6 +133,7 @@ private fun BottomSheetHost(
 		scrimColor = scrimColor,
 		dragHandle = dragHandle,
 		sheetState = sheetState,
+		contentWindowInsets = contentWindowInsets,
 		saveableStateHolder = saveableStateHolder,
 		backStackEntry = backStackEntry ?: return,
 	)
@@ -146,6 +151,7 @@ private fun BottomSheetHost(
 	tonalElevation: Dp,
 	scrimColor: Color,
 	dragHandle: @Composable (() -> Unit)?,
+	contentWindowInsets: @Composable () -> WindowInsets,
 	sheetState: SheetState,
 	saveableStateHolder: SaveableStateHolder,
 	backStackEntry: NavBackStackEntry,
@@ -168,6 +174,7 @@ private fun BottomSheetHost(
 			tonalElevation = tonalElevation,
 			scrimColor = scrimColor,
 			dragHandle = dragHandle,
+			contentWindowInsets = contentWindowInsets,
 			properties = ModalBottomSheetProperties(securePolicy = destination.securePolicy),
 		) {
 			LaunchedEffect(backStackEntry) {
