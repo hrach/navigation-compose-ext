@@ -9,6 +9,15 @@
     "skip-changelog",
   ],
   "rebaseWhen": "conflicted",
+  // deps that shouldn't be forced on users to be the latest ones
+  "ignoreDeps": [
+    "org.jetbrains.kotlinx:kotlinx-serialization-core",
+    "org.jetbrains.kotlinx:kotlinx-serialization-json",
+    "androidx.appcompat:appcompat",
+    "androidx.compose.foundation:foundation",
+    "androidx.compose.material3:material3",
+    "androidx.lifecycle:lifecycle-runtime",
+  ],
   "packageRules": [
     {
       "groupName": "GitHub Actions",
