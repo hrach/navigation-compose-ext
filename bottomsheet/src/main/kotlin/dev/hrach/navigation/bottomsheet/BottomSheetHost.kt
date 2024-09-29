@@ -1,6 +1,5 @@
 package dev.hrach.navigation.bottomsheet
 
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -29,7 +28,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-@OptIn(ExperimentalMaterial3Api::class)
+@ExperimentalMaterial3Api
 @Composable
 public fun BottomSheetHost(
 	navigator: BottomSheetNavigator,
@@ -40,9 +39,7 @@ public fun BottomSheetHost(
 	contentColor: Color = contentColorFor(containerColor),
 	tonalElevation: Dp = 0.dp,
 	scrimColor: Color = BottomSheetDefaults.ScrimColor,
-	dragHandle:
-		@Composable()
-		(() -> Unit)? = { BottomSheetDefaults.DragHandle() },
+	dragHandle: @Composable (() -> Unit)? = { BottomSheetDefaults.DragHandle() },
 ) {
 	val saveableStateHolder = rememberSaveableStateHolder()
 
@@ -97,9 +94,7 @@ private fun BottomSheetHost(
 	contentColor: Color,
 	tonalElevation: Dp,
 	scrimColor: Color,
-	dragHandle:
-		@Composable()
-		(() -> Unit)?,
+	dragHandle: @Composable (() -> Unit)?,
 	saveableStateHolder: SaveableStateHolder,
 	targetBackStackEntry: NavBackStackEntry?,
 ) {
@@ -107,6 +102,7 @@ private fun BottomSheetHost(
 	val sheetState = rememberModalBottomSheetState(
 		skipPartiallyExpanded = destination?.skipPartiallyExpanded ?: true,
 	)
+
 	@Suppress("ProduceStateDoesNotAssignValue") // false positive
 	val backStackEntry by produceState<NavBackStackEntry?>(
 		initialValue = null,
@@ -138,7 +134,7 @@ private fun BottomSheetHost(
 	)
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun BottomSheetHost(
 	navigator: BottomSheetNavigator,
@@ -149,9 +145,7 @@ private fun BottomSheetHost(
 	contentColor: Color,
 	tonalElevation: Dp,
 	scrimColor: Color,
-	dragHandle:
-		@Composable()
-		(() -> Unit)?,
+	dragHandle: @Composable (() -> Unit)?,
 	sheetState: SheetState,
 	saveableStateHolder: SaveableStateHolder,
 	backStackEntry: NavBackStackEntry,
