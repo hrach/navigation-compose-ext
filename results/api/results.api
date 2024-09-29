@@ -1,0 +1,5 @@
+public final class dev/hrach/navigation/results/ResultsKt {
+	public static final fun NavigationResultEffectImpl (Landroidx/navigation/NavBackStackEntry;Landroidx/navigation/NavController;Lkotlinx/serialization/KSerializer;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;I)V
+	public static final fun setResultImpl (Landroidx/navigation/NavController;Ljava/lang/Object;Lkotlinx/serialization/KSerializer;)V
+}
+

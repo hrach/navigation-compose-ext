@@ -1,0 +1,59 @@
+public final class dev/hrach/navigation/modalsheet/ComposableSingletons$ModalSheetDialogKt {
+	public static final field INSTANCE Ldev/hrach/navigation/modalsheet/ComposableSingletons$ModalSheetDialogKt;
+	public static field lambda-1 Lkotlin/jvm/functions/Function2;
+	public fun <init> ()V
+	public final fun getLambda-1$modalsheet_release ()Lkotlin/jvm/functions/Function2;
+}
+
+public final class dev/hrach/navigation/modalsheet/ComposableSingletons$ModalSheetNavigatorKt {
+	public static final field INSTANCE Ldev/hrach/navigation/modalsheet/ComposableSingletons$ModalSheetNavigatorKt;
+	public static field lambda-1 Lkotlin/jvm/functions/Function4;
+	public fun <init> ()V
+	public final fun getLambda-1$modalsheet_release ()Lkotlin/jvm/functions/Function4;
+}
+
+public final class dev/hrach/navigation/modalsheet/ModalSheetHostKt {
+	public static final fun ModalSheetHost-Y2L_72g (Ldev/hrach/navigation/modalsheet/ModalSheetNavigator;JLandroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)V
+}
+
+public final class dev/hrach/navigation/modalsheet/ModalSheetNavigator : androidx/navigation/Navigator {
+	public static final field $stable I
+	public fun <init> ()V
+	public synthetic fun createDestination ()Landroidx/navigation/NavDestination;
+	public fun createDestination ()Ldev/hrach/navigation/modalsheet/ModalSheetNavigator$Destination;
+	public fun navigate (Ljava/util/List;Landroidx/navigation/NavOptions;Landroidx/navigation/Navigator$Extras;)V
+	public fun popBackStack (Landroidx/navigation/NavBackStackEntry;Z)V
+	public final fun prepareForTransition (Landroidx/navigation/NavBackStackEntry;)V
+}
+
+public final class dev/hrach/navigation/modalsheet/ModalSheetNavigator$Destination : androidx/navigation/NavDestination, androidx/navigation/FloatingWindow {
+	public static final field $stable I
+	public fun <init> (Ldev/hrach/navigation/modalsheet/ModalSheetNavigator;Lkotlin/jvm/functions/Function4;)V
+}
+
+public final class dev/hrach/navigation/modalsheet/ModalSheetNavigatorDestinationBuilder : androidx/navigation/NavDestinationBuilder {
+	public static final field $stable I
+	public fun <init> (Ldev/hrach/navigation/modalsheet/ModalSheetNavigator;Ljava/lang/String;Lkotlin/jvm/functions/Function4;)V
+	public fun <init> (Ldev/hrach/navigation/modalsheet/ModalSheetNavigator;Lkotlin/reflect/KClass;Ljava/util/Map;Lkotlin/jvm/functions/Function4;)V
+	public synthetic fun build ()Landroidx/navigation/NavDestination;
+	public fun build ()Ldev/hrach/navigation/modalsheet/ModalSheetNavigator$Destination;
+	public final fun getEnterTransition ()Lkotlin/jvm/functions/Function1;
+	public final fun getExitTransition ()Lkotlin/jvm/functions/Function1;
+	public final fun getPopEnterTransition ()Lkotlin/jvm/functions/Function1;
+	public final fun getPopExitTransition ()Lkotlin/jvm/functions/Function1;
+	public final fun getSecurePolicy ()Landroidx/compose/ui/window/SecureFlagPolicy;
+	public final fun getSizeTransform ()Lkotlin/jvm/functions/Function1;
+	public synthetic fun instantiateDestination ()Landroidx/navigation/NavDestination;
+	public final fun setEnterTransition (Lkotlin/jvm/functions/Function1;)V
+	public final fun setExitTransition (Lkotlin/jvm/functions/Function1;)V
+	public final fun setPopEnterTransition (Lkotlin/jvm/functions/Function1;)V
+	public final fun setPopExitTransition (Lkotlin/jvm/functions/Function1;)V
+	public final fun setSecurePolicy (Landroidx/compose/ui/window/SecureFlagPolicy;)V
+	public final fun setSizeTransform (Lkotlin/jvm/functions/Function1;)V
+}
+
+public final class dev/hrach/navigation/modalsheet/NavGraphBuilderKt {
+	public static final fun modalSheet (Landroidx/navigation/NavGraphBuilder;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Landroidx/compose/ui/window/SecureFlagPolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function4;)V
+	public static synthetic fun modalSheet$default (Landroidx/navigation/NavGraphBuilder;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Landroidx/compose/ui/window/SecureFlagPolicy;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function4;ILjava/lang/Object;)V
+}
+

@@ -22,6 +22,7 @@ jobs:
           echo ${{ secrets.ENCRYPT_KEY }} | release/signing-unpack.sh
       - name: Deploy to Sonatype
         run: |
+          ./gradlew apiCheck
           ./gradlew :publishAggregatedPublicationToCentralPortal --no-configuration-cache
       - name: Build APK
         run: |
