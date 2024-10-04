@@ -18,6 +18,7 @@ import dev.hrach.navigation.modalsheet.ModalSheetNavigator.Destination
 @Navigator.Name("ModalSheetNavigator")
 public class ModalSheetNavigator : Navigator<Destination>() {
 	internal val backStack get() = state.backStack
+	internal val transitionsInProgress get() = state.transitionsInProgress
 
 	internal val isPop = mutableStateOf(false)
 

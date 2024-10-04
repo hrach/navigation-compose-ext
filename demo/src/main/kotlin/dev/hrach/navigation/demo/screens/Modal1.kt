@@ -41,6 +41,7 @@ internal fun Modal1(navController: NavController) {
 	}
 	Modal1(
 		navigate = navController::navigate,
+		close = navController::popBackStack,
 		bottomSheetResult = bottomSheetResult,
 	)
 }
@@ -48,6 +49,7 @@ internal fun Modal1(navController: NavController) {
 @Composable
 private fun Modal1(
 	navigate: (Any) -> Unit,
+	close: () -> Unit,
 	bottomSheetResult: Int,
 ) {
 	var disableBackHandling by rememberSaveable { mutableStateOf(false) }
@@ -77,6 +79,11 @@ private fun Modal1(
 			Row(verticalAlignment = Alignment.CenterVertically) {
 				Text("Disable back handling")
 				Switch(disableBackHandling, onCheckedChange = { disableBackHandling = it })
+			}
+
+			Spacer(Modifier.height(32.dp))
+			OutlinedButton(onClick = close) {
+				Text("Close")
 			}
 		}
 	}
