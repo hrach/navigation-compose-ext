@@ -21,19 +21,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.window.SecureFlagPolicy
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.LocalOwnersProvider
@@ -57,24 +52,14 @@ public fun ModalSheetHost(
 	sizeTransform: (AnimatedContentTransitionScope<NavBackStackEntry>.() -> @JvmSuppressWildcards SizeTransform?)? =
 		null,
 ) {
-	val modalBackStack by modalSheetNavigator.backStack.collectAsState(listOf())
-
 	var progress by remember { mutableFloatStateOf(0f) }
 	var inPredictiveBack by remember { mutableStateOf(false) }
-
 	val zIndices = remember { mutableMapOf<String, Float>() }
 
 	val saveableStateHolder = rememberSaveableStateHolder()
 
-	val visibleEntries = rememberVisibleList(modalBackStack)
-	visibleEntries.PopulateVisibleList(modalBackStack)
-
-	val currentBackStack = if (LocalInspectionMode.current) {
-		modalSheetNavigator.backStack.collectAsState(emptyList()).value
-	} else {
-		visibleEntries
-	}
-	val backStackEntry: NavBackStackEntry? = currentBackStack.lastOrNull()
+	val modalBackStack by modalSheetNavigator.backStack.collectAsState(listOf())
+	val backStackEntry: NavBackStackEntry? = modalBackStack.lastOrNull()
 
 	val finalEnter: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
 		val targetDestination = targetState.destination as ModalSheetNavigator.Destination
@@ -90,7 +75,6 @@ public fun ModalSheetHost(
 	}
 	val finalExit: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = {
 		val initialDestination = initialState.destination as ModalSheetNavigator.Destination
-
 		if (modalSheetNavigator.isPop.value) {
 			initialDestination.hierarchy.firstNotNullOfOrNull { destination ->
 				null // destination.createPopExitTransition(this)
@@ -103,7 +87,6 @@ public fun ModalSheetHost(
 	}
 	val finalSizeTransform: AnimatedContentTransitionScope<NavBackStackEntry>.() -> SizeTransform? = {
 		val targetDestination = targetState.destination as ModalSheetNavigator.Destination
-
 		targetDestination.hierarchy.firstNotNullOfOrNull { destination ->
 			null // destination.createSizeTransform(this)
 		} ?: sizeTransform?.invoke(this)
@@ -115,14 +98,16 @@ public fun ModalSheetHost(
 		// scope exposed by the transitions on the NavHost and composable APIs.
 		SeekableTransitionState(backStackEntry)
 	}
+	val transitionsInProgress = modalSheetNavigator.transitionsInProgress.collectAsState().value
 	val transition = rememberTransition(transitionState, label = "entry")
 	val nothingToShow = transition.currentState == transition.targetState &&
 		transition.currentState == null &&
-		backStackEntry == null
+		backStackEntry == null &&
+		transitionsInProgress.isEmpty()
 
 	if (inPredictiveBack) {
 		LaunchedEffect(progress) {
-			val previousEntry = currentBackStack.getOrNull(currentBackStack.size - 2)
+			val previousEntry = modalBackStack.getOrNull(modalBackStack.size - 2)
 			transitionState.seekTo(progress, previousEntry)
 		}
 	} else {
@@ -163,10 +148,12 @@ public fun ModalSheetHost(
 			?: SecureFlagPolicy.Inherit
 
 		ModalSheetDialog(
-			onPredictiveBack = { backEvent ->
+			onPredictiveBack = onPredictBack@{ backEvent ->
 				progress = 0f
-				val currentBackStackEntry = modalBackStack.lastOrNull()
-				modalSheetNavigator.prepareForTransition(currentBackStackEntry!!)
+				// early return: already animating backstack out, repeated back handling
+				// probably reproducible only with slowed animations
+				val currentBackStackEntry = modalBackStack.lastOrNull() ?: return@onPredictBack
+				modalSheetNavigator.prepareForTransition(currentBackStackEntry)
 				val previousEntry = modalBackStack.getOrNull(modalBackStack.size - 2)
 				if (previousEntry != null) {
 					modalSheetNavigator.prepareForTransition(previousEntry)
@@ -186,17 +173,20 @@ public fun ModalSheetHost(
 		) {
 			transition.AnimatedContent(
 				modifier = modifier
-					.background(if (transition.targetState == null) Color.Unspecified else containerColor),
+					.background(if (transition.targetState == null || transition.currentState == null) Color.Transparent else containerColor),
 				contentAlignment = Alignment.TopStart,
 				transitionSpec = block@{
+					@Suppress("UNCHECKED_CAST")
 					val initialState = initialState ?: return@block ContentTransform(
-						fadeIn(),
+						enterTransition(this as AnimatedContentTransitionScope<NavBackStackEntry>),
 						fadeOut(), // irrelevant
 						0f,
 					)
+
+					@Suppress("UNCHECKED_CAST")
 					val targetState = targetState ?: return@block ContentTransform(
 						fadeIn(), // irrelevant
-						fadeOut(),
+						exitTransition(this as AnimatedContentTransitionScope<NavBackStackEntry>),
 						0f,
 					)
 
@@ -218,13 +208,7 @@ public fun ModalSheetHost(
 						sizeTransform = finalSizeTransform(this),
 					)
 				},
-			) {
-				val currentEntry = if (inPredictiveBack) {
-					it
-				} else {
-					visibleEntries.lastOrNull { entry -> it == entry }
-				}
-
+			) { currentEntry ->
 				if (currentEntry == null) {
 					Box(Modifier.fillMaxSize()) {}
 					return@AnimatedContent
@@ -248,61 +232,6 @@ public fun ModalSheetHost(
 			zIndices
 				.filter { it.key != transition.targetState?.id }
 				.forEach { zIndices.remove(it.key) }
-		}
-	}
-}
-
-@Suppress("ComposeUnstableCollections")
-@Composable
-internal fun MutableList<NavBackStackEntry>.PopulateVisibleList(
-	transitionsInProgress: List<NavBackStackEntry>,
-) {
-	val isInspecting = LocalInspectionMode.current
-	transitionsInProgress.forEach { entry ->
-		DisposableEffect(entry.lifecycle) {
-			val observer = LifecycleEventObserver { _, event ->
-				// show dialog in preview
-				if (isInspecting && !contains(entry)) {
-					add(entry)
-				}
-				// ON_START -> add to visibleBackStack, ON_STOP -> remove from visibleBackStack
-				if (event == Lifecycle.Event.ON_START) {
-					// We want to treat the visible lists as sets, but we want to keep
-					// the functionality of mutableStateListOf() so that we recompose in response
-					// to adds and removes.
-					if (!contains(entry)) {
-						add(entry)
-					}
-				}
-				if (event == Lifecycle.Event.ON_STOP) {
-					remove(entry)
-				}
-			}
-			entry.lifecycle.addObserver(observer)
-			onDispose {
-				entry.lifecycle.removeObserver(observer)
-			}
-		}
-	}
-}
-
-@Composable
-internal fun rememberVisibleList(
-	transitionsInProgress: List<NavBackStackEntry>,
-): SnapshotStateList<NavBackStackEntry> {
-	// show dialog in preview
-	val isInspecting = LocalInspectionMode.current
-	return remember(transitionsInProgress) {
-		mutableStateListOf<NavBackStackEntry>().also {
-			it.addAll(
-				transitionsInProgress.filter { entry ->
-					if (isInspecting) {
-						true
-					} else {
-						entry.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
-					}
-				},
-			)
 		}
 	}
 }
