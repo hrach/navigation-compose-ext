@@ -176,14 +176,17 @@ public fun ModalSheetHost(
 					.background(if (transition.targetState == null || transition.currentState == null) Color.Transparent else containerColor),
 				contentAlignment = Alignment.TopStart,
 				transitionSpec = block@{
+					@Suppress("UNCHECKED_CAST")
 					val initialState = initialState ?: return@block ContentTransform(
-						fadeIn(),
+						enterTransition(this as AnimatedContentTransitionScope<NavBackStackEntry>),
 						fadeOut(), // irrelevant
 						0f,
 					)
+
+					@Suppress("UNCHECKED_CAST")
 					val targetState = targetState ?: return@block ContentTransform(
 						fadeIn(), // irrelevant
-						fadeOut(),
+						exitTransition(this as AnimatedContentTransitionScope<NavBackStackEntry>),
 						0f,
 					)
 
