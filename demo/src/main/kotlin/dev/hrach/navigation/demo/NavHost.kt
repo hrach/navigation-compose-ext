@@ -55,7 +55,7 @@ internal fun NavHost(
 		composable<Destinations.List> { List() }
 		composable<Destinations.Profile> { Profile() }
 		modalSheet<Destinations.Modal1> { Modal1(navController) }
-		modalSheet<Destinations.Modal2> { Modal2() }
+		modalSheet<Destinations.Modal2> { Modal2(navController) }
 		bottomSheet<Destinations.BottomSheet> { BottomSheet(navController) }
 	}
 	ModalSheetHost(

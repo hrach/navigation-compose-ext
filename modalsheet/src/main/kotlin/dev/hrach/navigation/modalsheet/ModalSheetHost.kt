@@ -227,8 +227,8 @@ public fun ModalSheetHost(
 		}
 	}
 	LaunchedEffect(transition.currentState, transition.targetState) {
-		if (transition.currentState == transition.targetState && backStackEntry != null) {
-			modalSheetNavigator.onTransitionComplete(backStackEntry)
+		if (transition.currentState == transition.targetState) {
+			transitionsInProgress.forEach { entry -> modalSheetNavigator.onTransitionComplete(entry) }
 			zIndices
 				.filter { it.key != transition.targetState?.id }
 				.forEach { zIndices.remove(it.key) }
