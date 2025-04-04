@@ -105,6 +105,7 @@ private fun BottomSheetHost(
 	val destination = targetBackStackEntry?.destination as? BottomSheetNavigator.Destination
 	val sheetState = rememberModalBottomSheetState(
 		skipPartiallyExpanded = destination?.skipPartiallyExpanded ?: true,
+		confirmValueChange = { destination?.confirmValueChange ?: true },
 	)
 
 	@Suppress("ProduceStateDoesNotAssignValue") // false positive
@@ -175,7 +176,10 @@ private fun BottomSheetHost(
 			scrimColor = scrimColor,
 			dragHandle = dragHandle,
 			contentWindowInsets = contentWindowInsets,
-			properties = ModalBottomSheetProperties(securePolicy = destination.securePolicy),
+			properties = ModalBottomSheetProperties(
+				securePolicy = destination.securePolicy,
+				shouldDismissOnBackPress = destination.shouldDismissOnBackPress,
+			),
 		) {
 			LaunchedEffect(backStackEntry) {
 				navigator.onTransitionComplete(backStackEntry)

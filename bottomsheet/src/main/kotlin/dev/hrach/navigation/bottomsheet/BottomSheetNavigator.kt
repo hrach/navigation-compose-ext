@@ -54,6 +54,8 @@ public class BottomSheetNavigator : Navigator<BottomSheetNavigator.Destination>(
 		internal val content: @Composable (NavBackStackEntry) -> Unit,
 	) : NavDestination(navigator), FloatingWindow {
 		internal var securePolicy: SecureFlagPolicy = SecureFlagPolicy.Inherit
+		internal var shouldDismissOnBackPress: Boolean = true
+		internal var confirmValueChange: Boolean = true
 		internal var skipPartiallyExpanded: Boolean = true
 	}
 }
