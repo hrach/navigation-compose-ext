@@ -9,7 +9,7 @@ plugins {
 	id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.16.3" apply false
 	id("org.jmailen.kotlinter") version "5.0.1" apply false
 	id("com.android.application") version "8.8.2" apply false
-	id("com.vanniktech.maven.publish") version "0.30.0" apply false
+	id("com.vanniktech.maven.publish") version "0.34.0" apply false
 	id("com.gradleup.nmcp") version "0.0.9"
 }
 
