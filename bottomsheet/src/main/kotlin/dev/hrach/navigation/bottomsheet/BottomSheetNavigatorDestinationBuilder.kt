@@ -21,7 +21,9 @@ public class BottomSheetNavigatorDestinationBuilder :
 	private val content: @Composable (NavBackStackEntry) -> Unit
 
 	public var securePolicy: SecureFlagPolicy = SecureFlagPolicy.Inherit
+	public var shouldDismissOnBackPress: Boolean = true
 	public var skipPartiallyExpanded: Boolean = true
+	public var confirmValueChange: Boolean = true
 
 	/**
 	 * DSL for constructing a new [BottomSheetNavigator.Destination]
@@ -66,6 +68,8 @@ public class BottomSheetNavigatorDestinationBuilder :
 		return super.build().also { destination ->
 			destination.securePolicy = securePolicy
 			destination.skipPartiallyExpanded = skipPartiallyExpanded
+			destination.confirmValueChange = confirmValueChange
+			destination.shouldDismissOnBackPress = shouldDismissOnBackPress
 		}
 	}
 }

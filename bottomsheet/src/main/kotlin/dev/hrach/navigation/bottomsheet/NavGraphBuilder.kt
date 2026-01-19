@@ -14,7 +14,9 @@ public inline fun <reified T : Any> NavGraphBuilder.bottomSheet(
 	typeMap: Map<KType, @JvmSuppressWildcards NavType<*>> = emptyMap(),
 	deepLinks: List<NavDeepLink> = emptyList(),
 	securePolicy: SecureFlagPolicy = SecureFlagPolicy.Inherit,
+	shouldDismissOnBackPress: Boolean = true,
 	skipPartiallyExpanded: Boolean = true,
+	confirmValueChange: Boolean = true,
 	noinline content: @Composable (NavBackStackEntry) -> Unit,
 ) {
 	destination(
@@ -28,7 +30,9 @@ public inline fun <reified T : Any> NavGraphBuilder.bottomSheet(
 				deepLink(deepLink)
 			}
 			this.securePolicy = securePolicy
+			this.shouldDismissOnBackPress = shouldDismissOnBackPress
 			this.skipPartiallyExpanded = skipPartiallyExpanded
+			this.confirmValueChange = confirmValueChange
 		},
 	)
 }
@@ -38,7 +42,9 @@ public fun NavGraphBuilder.bottomSheet(
 	arguments: List<NamedNavArgument> = emptyList(),
 	deepLinks: List<NavDeepLink> = emptyList(),
 	securePolicy: SecureFlagPolicy = SecureFlagPolicy.Inherit,
+	shouldDismissOnBackPress: Boolean = true,
 	skipPartiallyExpanded: Boolean = true,
+	confirmValueChange: Boolean = true,
 	content: @Composable (backstackEntry: NavBackStackEntry) -> Unit,
 ) {
 	destination(
@@ -54,7 +60,9 @@ public fun NavGraphBuilder.bottomSheet(
 				deepLink(deepLink)
 			}
 			this.securePolicy = securePolicy
+			this.shouldDismissOnBackPress = shouldDismissOnBackPress
 			this.skipPartiallyExpanded = skipPartiallyExpanded
+			this.confirmValueChange = confirmValueChange
 		},
 	)
 }
