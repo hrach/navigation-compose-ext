@@ -1,44 +1,43 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:base",
-    "schedule:weekly",
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'config:recommended',
+    'schedule:weekly',
   ],
-  "labels": [
-    "chore",
-    "skip-changelog",
+  labels: [
+    'chore',
+    'skip-changelog',
   ],
-  "rebaseWhen": "conflicted",
-  // deps that shouldn't be forced on users to be the latest ones
-  "ignoreDeps": [
-    "org.jetbrains.kotlinx:kotlinx-serialization-core",
-    "org.jetbrains.kotlinx:kotlinx-serialization-json",
-    "androidx.appcompat:appcompat",
-    "androidx.compose.foundation:foundation",
-    "androidx.compose.material3:material3",
-    "androidx.lifecycle:lifecycle-runtime",
+  rebaseWhen: 'conflicted',
+  ignoreDeps: [
+    'org.jetbrains.kotlinx:kotlinx-serialization-core',
+    'org.jetbrains.kotlinx:kotlinx-serialization-json',
+    'androidx.appcompat:appcompat',
+    'androidx.compose.foundation:foundation',
+    'androidx.compose.material3:material3',
+    'androidx.lifecycle:lifecycle-runtime',
   ],
-  "packageRules": [
+  packageRules: [
     {
-      "groupName": "GitHub Actions",
-      "matchPaths": [
-        ".github/**",
+      groupName: 'GitHub Actions',
+      matchFileNames: [
+        '.github/**',
       ],
     },
     {
-      "groupName": "Compose & Accompanist",
-      "matchPackageNames": [
-        "androidx.compose",
-        "com.google.accompanist",
+      groupName: 'Compose & Accompanist',
+      matchPackageNames: [
+        'androidx.compose',
+        'com.google.accompanist',
       ],
     },
     {
-      "groupName": "Kotlin & Dokka & Compose Compiler",
-      "matchPackagePrefixes": [
-        "org.jetbrains.kotlin",
-        "org.jetbrains.dokka",
-        "androidx.compose.compiler",
+      groupName: 'Kotlin & Dokka & Compose Compiler',
+      matchPackageNames: [
+        'org.jetbrains.kotlin{/,}**',
+        'org.jetbrains.dokka{/,}**',
+        'androidx.compose.compiler{/,}**',
       ],
     },
-  ]
+  ],
 }
